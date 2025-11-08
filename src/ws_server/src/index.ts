@@ -1,4 +1,5 @@
 import { WebSocketServer, WebSocket } from 'ws';
+import { messageHandler } from './messageHandler.js';
 
 const PORT = process.env.PORT ? Number(process.env.PORT) : 3000;
 
@@ -25,11 +26,9 @@ const main = (): void => {
     const clientIp = request.socket.remoteAddress;
     console.log(`New client connected from ${clientIp}`);
 
-    ws.on('message', (data: Buffer) => {
-      const message = data.toString('utf-8');
-      console.log(`Received message: ${message}`);
-      // ws.send('Result');
-      console.log(`Result: ${message}`);
+    ws.on('message', (message: string) => {
+      const response: string = messageHandler(message);
+      ws.send(response);
     });
 
     ws.on('close', () => {
