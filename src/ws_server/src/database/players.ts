@@ -1,7 +1,7 @@
 import { Player, PlayerData } from './types.js';
 import { randomUUID } from 'crypto';
 
-class InMemoryDatabase {
+class Players {
   private players: Map<string, Player> = new Map();
   private nameIndex: Map<string, string> = new Map(); // name -> id mapping
 
@@ -93,4 +93,4 @@ class InMemoryDatabase {
   }
 }
 
-export const db = new InMemoryDatabase();
+export const playersDb = new Players();

@@ -1,6 +1,6 @@
 import { RequestMessage, ResponseMessage, MessageType } from '../types.js';
 import { makeResponseMessageString } from '../utils/makeResponseMessageString.js';
-import { db } from '../database.js';
+import { playersDb } from '../database/players.js';
 
 export const register = (requestMessage: RequestMessage): string => {
   const { name, password } = requestMessage.data;
@@ -18,7 +18,7 @@ export const register = (requestMessage: RequestMessage): string => {
     };
     return makeResponseMessageString(errorResponse);
   }
-  const newPlayer = db.createPlayer({ name, password });
+  const newPlayer = playersDb.createPlayer({ name, password });
   const errorResponse: ResponseMessage = {
     type: MessageType.Registration,
     data: {

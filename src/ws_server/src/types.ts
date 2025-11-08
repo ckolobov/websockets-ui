@@ -1,14 +1,3 @@
-export interface Player {
-  id: string;
-  name: string;
-  password: string;
-}
-
-export interface PlayerData {
-  name: string;
-  password: string;
-}
-
 export enum MessageType {
   Registration = 'reg',
 }
