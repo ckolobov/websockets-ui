@@ -5,10 +5,11 @@ class Rooms {
   private rooms: Map<string, Room> = new Map();
   private playerRoomIndex: Map<string, string> = new Map(); // playerId -> roomId mapping
 
-  createRoom(playerId: string): Room {
+  createRoom(playerId: string): boolean {
     const existingRoomId = this.playerRoomIndex.get(playerId);
     if (existingRoomId) {
-      throw new Error(`Player ${playerId} is already in room ${existingRoomId}`);
+      console.log(`Player ${playerId} is already in room ${existingRoomId}`);
+      return false;
     }
 
     const room = new Room(playerId);
@@ -16,7 +17,7 @@ class Rooms {
     this.playerRoomIndex.set(playerId, room.getId());
 
     console.log(`Room created: ${room.getId()} by player ${playerId}`);
-    return room;
+    return true;
   }
 
   joinRoom(roomId: string, playerId: string): Room {

@@ -1,5 +1,5 @@
 import { WebSocketServer, WebSocket } from 'ws';
-import { messageHandler } from './messageHandler.js';
+import { wsConnectionHandler } from './wsConnectionHandler.js';
 
 const PORT = process.env.PORT ? Number(process.env.PORT) : 3000;
 
@@ -22,23 +22,7 @@ const main = (): void => {
     console.log('='.repeat(50));
   });
 
-  wss.on('connection', (ws: WebSocket, request) => {
-    const clientIp = request.socket.remoteAddress;
-    console.log(`New client connected from ${clientIp}`);
-
-    ws.on('message', (message: string) => {
-      const response: string = messageHandler(message);
-      ws.send(response);
-    });
-
-    ws.on('close', () => {
-      console.log(`Client disconnected: ${clientIp}`);
-    });
-
-    ws.on('error', (error) => {
-      console.error(`WebSocket error: ${error.message}`);
-    });
-  });
+  wss.on('connection', wsConnectionHandler);
 
   wss.on('error', (error) => {
     console.error(`Server error: ${error.message}`);
