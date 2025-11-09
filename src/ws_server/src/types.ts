@@ -1,20 +1,20 @@
-export enum MessageType {
+export enum ClientMessageType {
   Registration = 'reg',
   CreateRoom = 'create_room',
 }
 
-export const isMessageType = (messageType: unknown): messageType is MessageType =>
+export const isClientMessageType = (messageType: unknown): messageType is ClientMessageType =>
   typeof messageType === 'string' &&
-  Object.values(MessageType).includes(messageType as MessageType);
+  Object.values(ClientMessageType).includes(messageType as ClientMessageType);
 
 export interface RequestMessageObject {
-  type: MessageType.Registration | MessageType.CreateRoom;
+  type: ClientMessageType.Registration | ClientMessageType.CreateRoom;
   data: string;
   id: 0;
 }
 
 export interface RegisterRequestMessage {
-  type: MessageType.Registration;
+  type: ClientMessageType.Registration;
   data: {
     name?: string;
     password?: string;
@@ -23,15 +23,20 @@ export interface RegisterRequestMessage {
 }
 
 export interface CreateRoomRequestMessage {
-  type: MessageType.CreateRoom;
+  type: ClientMessageType.CreateRoom;
   data: null;
   id: 0;
 }
 
 export type RequestMessage = RegisterRequestMessage | CreateRoomRequestMessage;
 
-export type ResponseMessage = {
-  type: MessageType.Registration;
+export enum ServerMessageType {
+  UpdateWinners = 'update_winners',
+  UpdateRoom = 'update_room',
+}
+
+export interface RegisterResponseMessage {
+  type: ClientMessageType.Registration;
   data: {
     name: string;
     index: number | string;
@@ -39,4 +44,36 @@ export type ResponseMessage = {
     errorText: string;
   };
   id: 0;
-};
+}
+
+interface Winner {
+  name: string;
+  wins: number;
+}
+
+export interface UpdateWinnersServerMessage {
+  type: ServerMessageType.UpdateWinners;
+  data: Winner[];
+  id: 0;
+}
+
+interface RoomUser {
+  name: string;
+  index: string | number;
+}
+
+interface Room {
+  roomId: string | number;
+  roomUsers: RoomUser[];
+}
+
+export interface UpdateRoomServerMessage {
+  type: ServerMessageType.UpdateRoom;
+  data: Room[];
+  id: 0;
+}
+
+export type ResponseMessage =
+  | RegisterResponseMessage
+  | UpdateWinnersServerMessage
+  | UpdateRoomServerMessage;

@@ -1,11 +1,13 @@
 import { IncomingMessage } from 'node:http';
 import { WebSocket } from 'ws';
-import { MessageType, isMessageType } from './types.js';
+import { ClientMessageType, isClientMessageType } from './types.js';
 import { parseRequestMessage } from './utils/parseRequestMessage.js';
 import { register } from './client-commands/register.js';
 import { createRoom } from './client-commands/createRoom.js';
 import { updateRoom } from './server-commands/updateRoom.js';
 import { updateWinners } from './server-commands/updateWinners.js';
+import { playerConnectionsDb } from './database/playerConnections.js';
+import { winnersDb } from './database/winners.js';
 
 export const wsConnectionHandler = (ws: WebSocket, request: IncomingMessage) => {
   const clientIp = request.socket.remoteAddress;
@@ -18,23 +20,25 @@ export const wsConnectionHandler = (ws: WebSocket, request: IncomingMessage) => 
 
       const parsedMessage = parseRequestMessage(message);
 
-      if (!parsedMessage?.type || !isMessageType(parsedMessage.type)) {
+      if (!parsedMessage?.type || !isClientMessageType(parsedMessage.type)) {
         console.log(`Unknown message type: ${parsedMessage?.type}`);
         return JSON.stringify('Unknown message type');
       }
 
       switch (parsedMessage.type) {
-        case MessageType.Registration: {
+        case ClientMessageType.Registration: {
           const [response, newPlayerId] = register(parsedMessage);
           playerId = newPlayerId;
           ws.send(response);
           if (playerId) {
+            playerConnectionsDb.addPlayerConnection(playerId, ws);
+            winnersDb.addPlayer(playerId);
             updateRoom();
             updateWinners();
           }
           break;
         }
-        case MessageType.CreateRoom: {
+        case ClientMessageType.CreateRoom: {
           const success = createRoom(playerId);
           if (success) {
             updateRoom();

@@ -1,4 +1,4 @@
-import { RegisterRequestMessage, ResponseMessage, MessageType } from '../types.js';
+import { RegisterRequestMessage, ResponseMessage, ClientMessageType } from '../types.js';
 import { makeResponseMessageString } from '../utils/makeResponseMessageString.js';
 import { playersDb } from '../database/players.js';
 
@@ -10,7 +10,7 @@ export const register = (requestMessage: RegisterRequestMessage): [Response, New
   if (!name || !password) {
     console.error('Invalid registration data');
     const errorResponse: ResponseMessage = {
-      type: MessageType.Registration,
+      type: ClientMessageType.Registration,
       data: {
         name: name ?? '',
         index: '',
@@ -23,7 +23,7 @@ export const register = (requestMessage: RegisterRequestMessage): [Response, New
   }
   const newPlayer = playersDb.createPlayer({ name, password });
   const errorResponse: ResponseMessage = {
-    type: MessageType.Registration,
+    type: ClientMessageType.Registration,
     data: {
       name: name,
       index: newPlayer.id,
