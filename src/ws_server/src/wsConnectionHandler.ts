@@ -15,6 +15,7 @@ import { addShips } from './client-commands/addShips.js';
 import { roomsDb } from './database/rooms.js';
 import { turn } from './server-commands/turn.js';
 import { attack as clientAttack } from './client-commands/attack.js';
+import { attack as serverAttack } from './server-commands/attack.js';
 
 export const wsConnectionHandler = (ws: WebSocket, request: IncomingMessage) => {
   const clientIp = request.socket.remoteAddress;
@@ -69,11 +70,11 @@ export const wsConnectionHandler = (ws: WebSocket, request: IncomingMessage) => 
           break;
         }
         case ClientMessageType.Attack: {
+          const { x, y } = parsedMessage.data;
           const result = clientAttack(parsedMessage);
           if (result) {
-            const { roomId, sunk, gameOver, hit } = result;
-            console.log('Server attack');
-            console.log(roomId, sunk, gameOver, hit);
+            const { roomId, sunk, gameOver, hit, shipCells } = result;
+            serverAttack({ roomId, hit, sunk, gameOver, x, y, shipCells });
           }
           break;
         }

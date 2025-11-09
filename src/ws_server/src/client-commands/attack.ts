@@ -5,7 +5,13 @@ type RoomId = string;
 
 export const attack = (
   requestMessage: AttackRequestMessage,
-): { hit: boolean; sunk: boolean; gameOver: boolean; roomId: RoomId } | null => {
+): {
+  hit: boolean;
+  sunk: boolean;
+  gameOver: boolean;
+  roomId: RoomId;
+  shipCells?: { x: number; y: number }[];
+} | null => {
   try {
     const { indexPlayer, x, y } = requestMessage.data;
     const playerId = String(indexPlayer);

@@ -40,6 +40,7 @@ export const turn = (roomId: string) => {
       id: 0,
     };
 
+    console.log(`Info about player's turn sended to ${playerId}`);
     wsConnection.send(makeResponseMessageString(turnServerMessage));
   });
 };

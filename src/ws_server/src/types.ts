@@ -85,6 +85,7 @@ export enum ServerMessageType {
   CreateGame = 'create_game',
   StartGame = 'start_game',
   Turn = 'turn',
+  Attack = 'attack',
 }
 
 export interface RegisterResponseMessage {
@@ -151,10 +152,30 @@ export interface TurnServerMessage {
   id: 0;
 }
 
+export enum AttackStatus {
+  Miss = 'miss',
+  Killed = 'killed',
+  Shot = 'shot',
+}
+
+export interface AttackServerMessage {
+  type: ServerMessageType.Attack;
+  data: {
+    position: {
+      x: number;
+      y: number;
+    };
+    currentPlayer: number | string; // id of the player in the current game session
+    status: AttackStatus;
+  };
+  id: 0;
+}
+
 export type ResponseMessage =
   | RegisterResponseMessage
   | UpdateWinnersServerMessage
   | UpdateRoomServerMessage
   | CreateGameServerMessage
   | StartGameServerMessage
-  | TurnServerMessage;
+  | TurnServerMessage
+  | AttackServerMessage;

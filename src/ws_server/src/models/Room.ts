@@ -73,6 +73,16 @@ export class Room {
     return null;
   }
 
+  getPlayerOpponent(playerId: string): PlayerInRoom | null {
+    if (this.players[0]?.playerId === playerId) {
+      return this.players[1];
+    }
+    if (this.players[1]?.playerId === playerId) {
+      return this.players[0];
+    }
+    return null;
+  }
+
   addPlayer(playerId: string): boolean {
     if (this.isFull()) {
       console.error(`Room ${this.id} is full`);
@@ -156,6 +166,7 @@ export class Room {
     hit: boolean;
     sunk: boolean;
     gameOver: boolean;
+    shipCells?: { x: number; y: number }[];
   } | null {
     if (!this.gameStarted) {
       console.error(`Game has not started in room ${this.id}`);
@@ -167,7 +178,7 @@ export class Room {
       return null;
     }
 
-    const opponent = this.players[0].playerId === attackerId ? this.players[1] : this.players[0];
+    const opponent = this.getPlayerOpponent(attackerId);
     if (!opponent) {
       console.error(`Opponent not found for player ${attackerId} in room ${this.id}`);
       return null;
@@ -176,15 +187,25 @@ export class Room {
     const result = opponent.board.attack(x, y);
     const gameOver = opponent.board.areAllShipsSunk();
 
-    // Switch turn if it was a miss
-    if (!result.hit) {
-      this.currentTurn = opponent.playerId;
-    }
-
     return {
       hit: result.hit,
       sunk: result.sunk,
       gameOver,
+      shipCells: result.ship?.getCells(),
     };
+  }
+
+  switchTurn() {
+    const currentTurn = this.currentTurn;
+    if (!currentTurn) {
+      return;
+    }
+
+    const opponent = this.getPlayerOpponent(currentTurn);
+    if (!opponent) {
+      return;
+    }
+
+    this.currentTurn = opponent.playerId;
   }
 }
