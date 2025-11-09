@@ -4,6 +4,7 @@ import { PlayerInRoom } from '../models/Room.js';
 import { makeResponseMessageString } from '../utils/makeResponseMessageString.js';
 import { AttackServerMessage, AttackStatus, ServerMessageType } from '../types.js';
 import { turn } from './turn.js';
+import { finish } from './finish.js';
 
 interface GetAttackStatusParams {
   hit: boolean;
@@ -56,7 +57,7 @@ const sendAttackMessage = ({
       id: 0,
     };
 
-    console.log(`Attack results sended to ${playerId}`);
+    console.log(`Attack results sent to ${playerId}`);
     wsConnection.send(makeResponseMessageString(attackServerMessage));
   });
 };
@@ -131,5 +132,7 @@ export const attack = ({ roomId, x, y, hit, sunk, gameOver, shipCells }: ServerA
     });
   }
 
-  console.log('Game over: ', gameOver);
+  if (gameOver) {
+    finish(roomId);
+  }
 };

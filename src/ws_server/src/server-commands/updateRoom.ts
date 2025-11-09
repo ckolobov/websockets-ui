@@ -31,7 +31,7 @@ export const updateRoom = () => {
 
   connections.forEach((connection) => {
     const [playerId, wsConnection] = connection;
-    console.log(`Rooms list sended to ${playerId}`);
+    console.log(`Rooms list sent to ${playerId}`);
     wsConnection.send(roomsMessage);
   });
 };

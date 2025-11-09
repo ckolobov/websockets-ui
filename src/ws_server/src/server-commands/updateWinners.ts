@@ -20,7 +20,7 @@ export const updateWinners = () => {
 
   connections.forEach((connection) => {
     const [playerId, wsConnection] = connection;
-    console.log(`Winners table sended to ${playerId}`);
+    console.log(`Winners table sent to ${playerId}`);
     wsConnection.send(winnersMessage);
   });
 };

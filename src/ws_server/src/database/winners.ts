@@ -9,7 +9,7 @@ class Winners {
 
   addWin(playerId: string) {
     const currentWins = this.playerWins.get(playerId);
-    if (!currentWins) {
+    if (currentWins === undefined) {
       throw new Error('Cannot add win to unregistered player. Add player first.');
     }
     this.playerWins.set(playerId, currentWins + 1);

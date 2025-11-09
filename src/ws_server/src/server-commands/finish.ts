@@ -2,26 +2,28 @@ import { roomsDb } from '../database/rooms.js';
 import { playerConnectionsDb } from '../database/playerConnections.js';
 import { PlayerInRoom } from '../models/Room.js';
 import { makeResponseMessageString } from '../utils/makeResponseMessageString.js';
-import { ServerMessageType, TurnServerMessage } from '../types.js';
+import { FinishServerMessage, ServerMessageType } from '../types.js';
+import { winnersDb } from '../database/winners.js';
+import { updateWinners } from './updateWinners.js';
 
-export const turn = (roomId: string) => {
+export const finish = (roomId: string) => {
   const room = roomsDb.getRoomById(roomId);
   if (!room) {
-    console.error('Cannot send turn. Room not found.');
+    console.error('Cannot finish game. Room not found.');
     return;
   }
 
   const players: PlayerInRoom[] = room.getPlayers().filter((player) => player !== null);
-  if (players.length < 2) {
-    console.error('Cannot send turn. Not enough players in the room.');
+
+  const winner = room.getCurrentTurn();
+  if (winner === null) {
+    console.error('Cannot finish game. Winner is undefined.');
     return;
   }
 
-  const currentPlayerId = room.getCurrentTurn();
-  if (currentPlayerId === null) {
-    console.error('Cannot send turn. Current turn is undefined.');
-    return;
-  }
+  console.log('Winner: ', winner);
+
+  winnersDb.addWin(winner);
 
   players.forEach((playerInRoom) => {
     const playerId = playerInRoom.playerId;
@@ -32,15 +34,17 @@ export const turn = (roomId: string) => {
       return;
     }
 
-    const turnServerMessage: TurnServerMessage = {
-      type: ServerMessageType.Turn,
+    const finishServerMessage: FinishServerMessage = {
+      type: ServerMessageType.Finish,
       data: {
-        currentPlayer: currentPlayerId,
+        winPlayer: winner,
       },
       id: 0,
     };
 
-    console.log(`Info about player's turn sent to ${playerId}`);
-    wsConnection.send(makeResponseMessageString(turnServerMessage));
+    console.log(`Info about game finish sent to ${playerId}`);
+    wsConnection.send(makeResponseMessageString(finishServerMessage));
   });
+
+  updateWinners();
 };
