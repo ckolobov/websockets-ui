@@ -68,6 +68,15 @@ class Rooms {
     room.setPlayerReady(playerId, true);
   }
 
+  getShips(playerId: string): ShipParameters[] {
+    const room = this.getRoomByPlayerId(playerId);
+    if (!room) {
+      throw new Error(`Player ${playerId} is not in any room`);
+    }
+
+    return room.getShipsByPlayerId(playerId);
+  }
+
   attack(
     attackerId: string,
     x: number,

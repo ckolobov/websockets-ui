@@ -92,8 +92,7 @@ export class Room {
   setPlayerReady(playerId: string, ready: boolean): void {
     const player = this.getPlayer(playerId);
     if (!player) {
-      console.error(`Player ${playerId} not found in room ${this.id}`);
-      return;
+      throw new Error(`Player ${playerId} not found in room ${this.id}`);
     }
 
     player.ready = ready;
@@ -131,6 +130,22 @@ export class Room {
     } else {
       console.error(`Failed to add ship for player ${playerId} in room ${this.id}`);
     }
+  }
+
+  getShipsByPlayerId(playerId: string): ShipParameters[] {
+    const player = this.getPlayer(playerId);
+    if (!player) {
+      throw new Error(`Player ${playerId} not found in room ${this.id}`);
+    }
+
+    const playerShips = player.board.getShips();
+
+    return playerShips.map((ship) => ({
+      position: ship.getPosition(),
+      length: ship.getLength(),
+      direction: ship.getDirection(),
+      type: ship.getType(),
+    }));
   }
 
   attack(

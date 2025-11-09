@@ -1,4 +1,4 @@
-import { ShipPosition, ShipDirection, ShipParameters } from './types.js';
+import { ShipPosition, ShipDirection, ShipParameters, ShipType } from './types.js';
 
 export class Ship {
   private position: ShipPosition;
@@ -6,13 +6,27 @@ export class Ship {
   private isSunk: boolean;
   private length: number;
   private direction: ShipDirection;
+  private type: ShipType;
 
   constructor(shipParameters: ShipParameters) {
     this.length = shipParameters.length;
     this.position = shipParameters.position;
     this.direction = shipParameters.direction;
+    this.type = shipParameters.type;
     this.hits = 0;
     this.isSunk = false;
+  }
+
+  getLength(): number {
+    return this.length;
+  }
+
+  getDirection(): ShipDirection {
+    return this.direction;
+  }
+
+  getType(): ShipType {
+    return this.type;
   }
 
   getPosition(): ShipPosition {
@@ -25,10 +39,6 @@ export class Ship {
 
   getIsSunk(): boolean {
     return this.isSunk;
-  }
-
-  getLength(): number {
-    return this.length;
   }
 
   registerHit(): void {

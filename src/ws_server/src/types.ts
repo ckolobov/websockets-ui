@@ -70,6 +70,7 @@ export enum ServerMessageType {
   UpdateWinners = 'update_winners',
   UpdateRoom = 'update_room',
   CreateGame = 'create_game',
+  StartGame = 'start_game',
 }
 
 export interface RegisterResponseMessage {
@@ -119,8 +120,18 @@ export interface CreateGameServerMessage {
   id: 0;
 }
 
+export interface StartGameServerMessage {
+  type: ServerMessageType.StartGame;
+  data: {
+    ships: Ship[];
+    currentPlayerIndex: number | string;
+  };
+  id: 0;
+}
+
 export type ResponseMessage =
   | RegisterResponseMessage
   | UpdateWinnersServerMessage
   | UpdateRoomServerMessage
-  | CreateGameServerMessage;
+  | CreateGameServerMessage
+  | StartGameServerMessage;

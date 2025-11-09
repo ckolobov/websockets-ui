@@ -10,6 +10,7 @@ import { playerConnectionsDb } from './database/playerConnections.js';
 import { winnersDb } from './database/winners.js';
 import { addUserToRoom } from './client-commands/addUserToRoom.js';
 import { createGame } from './server-commands/createGame.js';
+import { startGame } from './server-commands/startGame.js';
 import { addShips } from './client-commands/addShips.js';
 import { roomsDb } from './database/rooms.js';
 
@@ -60,7 +61,7 @@ export const wsConnectionHandler = (ws: WebSocket, request: IncomingMessage) => 
         case ClientMessageType.AddShips: {
           const roomId: string | null = addShips(parsedMessage);
           if (roomId && roomsDb.getRoomById(roomId)?.getGameStarted()) {
-            console.log('Start game');
+            startGame(roomId);
           }
         }
       }
