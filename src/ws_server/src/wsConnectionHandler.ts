@@ -13,6 +13,7 @@ import { createGame } from './server-commands/createGame.js';
 import { startGame } from './server-commands/startGame.js';
 import { addShips } from './client-commands/addShips.js';
 import { roomsDb } from './database/rooms.js';
+import { turn } from './server-commands/turn.js';
 
 export const wsConnectionHandler = (ws: WebSocket, request: IncomingMessage) => {
   const clientIp = request.socket.remoteAddress;
@@ -62,6 +63,7 @@ export const wsConnectionHandler = (ws: WebSocket, request: IncomingMessage) => 
           const roomId: string | null = addShips(parsedMessage);
           if (roomId && roomsDb.getRoomById(roomId)?.getGameStarted()) {
             startGame(roomId);
+            turn(roomId);
           }
         }
       }

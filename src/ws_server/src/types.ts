@@ -71,6 +71,7 @@ export enum ServerMessageType {
   UpdateRoom = 'update_room',
   CreateGame = 'create_game',
   StartGame = 'start_game',
+  Turn = 'turn',
 }
 
 export interface RegisterResponseMessage {
@@ -129,9 +130,18 @@ export interface StartGameServerMessage {
   id: 0;
 }
 
+export interface TurnServerMessage {
+  type: ServerMessageType.Turn;
+  data: {
+    currentPlayer: number | string; // id of the player in the current game session
+  };
+  id: 0;
+}
+
 export type ResponseMessage =
   | RegisterResponseMessage
   | UpdateWinnersServerMessage
   | UpdateRoomServerMessage
   | CreateGameServerMessage
-  | StartGameServerMessage;
+  | StartGameServerMessage
+  | TurnServerMessage;
