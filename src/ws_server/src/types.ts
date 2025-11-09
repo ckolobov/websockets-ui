@@ -1,6 +1,7 @@
 export enum ClientMessageType {
   Registration = 'reg',
   CreateRoom = 'create_room',
+  AddUserToRoom = 'add_user_to_room',
 }
 
 export const isClientMessageType = (messageType: unknown): messageType is ClientMessageType =>
@@ -28,7 +29,18 @@ export interface CreateRoomRequestMessage {
   id: 0;
 }
 
-export type RequestMessage = RegisterRequestMessage | CreateRoomRequestMessage;
+export interface AddUserToRoomRequestMessage {
+  type: ClientMessageType.AddUserToRoom;
+  data: {
+    indexRoom: number | string;
+  };
+  id: 0;
+}
+
+export type RequestMessage =
+  | RegisterRequestMessage
+  | CreateRoomRequestMessage
+  | AddUserToRoomRequestMessage;
 
 export enum ServerMessageType {
   UpdateWinners = 'update_winners',
