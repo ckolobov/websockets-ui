@@ -26,18 +26,24 @@ class Rooms {
       throw new Error(`Room ${roomId} not found`);
     }
 
-    const existingRoomId = this.playerRoomIndex.get(playerId);
-    if (existingRoomId) {
-      throw new Error(`Player ${playerId} is already in room ${existingRoomId}`);
-    }
-
     if (room.isFull()) {
       throw new Error(`Room ${roomId} is full`);
+    }
+
+    const existingRoomId = this.playerRoomIndex.get(playerId);
+    if (existingRoomId) {
+      const existingRoom = this.rooms.get(existingRoomId);
+      if (existingRoom && existingRoom.getGameCreated()) {
+        throw new Error(`Player ${playerId} is already in game in room ${existingRoomId}`);
+      }
     }
 
     const success = room.addPlayer(playerId);
     if (success) {
       this.playerRoomIndex.set(playerId, roomId);
+      if (existingRoomId) {
+        this.deleteRoom(existingRoomId);
+      }
     }
 
     return room;

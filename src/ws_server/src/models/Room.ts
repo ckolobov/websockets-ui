@@ -11,6 +11,7 @@ export interface PlayerInRoom {
 export class Room {
   private id: string;
   private players: [PlayerInRoom, PlayerInRoom | null];
+  private gameCreated: boolean;
   private gameStarted: boolean;
   private currentTurn: string | null;
   private createdAt: Date;
@@ -19,6 +20,7 @@ export class Room {
     this.id = randomUUID();
     this.players = [this.createPlayerInRoom(creatorPlayerId), null];
     this.gameStarted = false;
+    this.gameCreated = false;
     this.currentTurn = null;
     this.createdAt = new Date();
   }
@@ -37,6 +39,10 @@ export class Room {
 
   getPlayers(): [PlayerInRoom, PlayerInRoom | null] {
     return this.players;
+  }
+
+  getGameCreated(): boolean {
+    return this.gameCreated;
   }
 
   getGameStarted(): boolean {
