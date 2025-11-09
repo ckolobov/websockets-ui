@@ -29,8 +29,8 @@ export const wsConnectionHandler = (ws: WebSocket, request: IncomingMessage) => 
 
       switch (parsedMessage.type) {
         case ClientMessageType.Registration: {
-          const [response, newPlayerId] = register(parsedMessage);
-          playerId = newPlayerId;
+          const [response, registeredPlayerId] = register(parsedMessage);
+          playerId = registeredPlayerId;
           ws.send(response);
           if (playerId) {
             playerConnectionsDb.addPlayerConnection(playerId, ws);
@@ -63,6 +63,9 @@ export const wsConnectionHandler = (ws: WebSocket, request: IncomingMessage) => 
 
   ws.on('close', () => {
     console.log(`Client disconnected: ${clientIp}`);
+    if (playerId) {
+      playerConnectionsDb.removePlayerConnection(playerId);
+    }
   });
 
   ws.on('error', (error) => {

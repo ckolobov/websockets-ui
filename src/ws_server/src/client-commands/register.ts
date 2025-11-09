@@ -11,6 +11,25 @@ export const register = (requestMessage: RegisterRequestMessage): [Response, New
     if (!name || !password) {
       throw new Error('Invalid registration/authentication data');
     }
+    const existingPlayer = playersDb.getPlayerByName(name);
+    if (existingPlayer) {
+      const authenticatedPlayer = playersDb.authenticatePlayer(name, password);
+      if (!authenticatedPlayer) {
+        throw new Error('Authentication failed');
+      }
+
+      const response: ResponseMessage = {
+        type: ClientMessageType.Registration,
+        data: {
+          name: name,
+          index: authenticatedPlayer.id,
+          error: false,
+          errorText: '',
+        },
+        id: 0,
+      };
+      return [makeResponseMessageString(response), authenticatedPlayer.id];
+    }
 
     const newPlayer = playersDb.createPlayer({ name, password });
     const response: ResponseMessage = {

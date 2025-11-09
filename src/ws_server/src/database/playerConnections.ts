@@ -8,6 +8,10 @@ class PlayerConnections {
   }
 
   addPlayerConnection(playerId: string, ws: WebSocket) {
+    const existingPlayerConnection = this.getPlayerConnection(playerId);
+    if (existingPlayerConnection) {
+      existingPlayerConnection.close();
+    }
     this.playerConnectionMap.set(playerId, ws);
   }
 
