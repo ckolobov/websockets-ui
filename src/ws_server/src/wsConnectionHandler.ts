@@ -14,6 +14,7 @@ import { startGame } from './server-commands/startGame.js';
 import { addShips } from './client-commands/addShips.js';
 import { roomsDb } from './database/rooms.js';
 import { turn } from './server-commands/turn.js';
+import { attack as clientAttack } from './client-commands/attack.js';
 
 export const wsConnectionHandler = (ws: WebSocket, request: IncomingMessage) => {
   const clientIp = request.socket.remoteAddress;
@@ -65,6 +66,16 @@ export const wsConnectionHandler = (ws: WebSocket, request: IncomingMessage) => 
             startGame(roomId);
             turn(roomId);
           }
+          break;
+        }
+        case ClientMessageType.Attack: {
+          const result = clientAttack(parsedMessage);
+          if (result) {
+            const { roomId, sunk, gameOver, hit } = result;
+            console.log('Server attack');
+            console.log(roomId, sunk, gameOver, hit);
+          }
+          break;
         }
       }
     } catch (error) {
