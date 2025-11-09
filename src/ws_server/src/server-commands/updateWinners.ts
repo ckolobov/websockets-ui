@@ -6,10 +6,13 @@ import { ServerMessageType } from '../types.js';
 
 export const updateWinners = () => {
   const players = playersDb.getAllPlayers();
+
   const winners = players.map((player) => ({
     name: player.name,
     wins: winnersDb.getPlayerWinsCount(player.id),
   }));
+  winners.sort((w1, w2) => w2.wins - w1.wins);
+
   const winnersMessage = makeResponseMessageString({
     type: ServerMessageType.UpdateWinners,
     data: winners,
