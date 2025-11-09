@@ -1,7 +1,10 @@
+import { ShipType } from './models/types.js';
+
 export enum ClientMessageType {
   Registration = 'reg',
   CreateRoom = 'create_room',
   AddUserToRoom = 'add_user_to_room',
+  AddShips = 'add_ships',
 }
 
 export const isClientMessageType = (messageType: unknown): messageType is ClientMessageType =>
@@ -37,10 +40,31 @@ export interface AddUserToRoomRequestMessage {
   id: 0;
 }
 
+interface Ship {
+  position: {
+    x: number;
+    y: number;
+  };
+  direction: boolean;
+  length: number;
+  type: ShipType;
+}
+
+export interface AddShipsRequestMessage {
+  type: ClientMessageType.AddShips;
+  data: {
+    gameId: number | string;
+    ships: Ship[];
+    indexPlayer: number | string;
+  };
+  id: 0;
+}
+
 export type RequestMessage =
   | RegisterRequestMessage
   | CreateRoomRequestMessage
-  | AddUserToRoomRequestMessage;
+  | AddUserToRoomRequestMessage
+  | AddShipsRequestMessage;
 
 export enum ServerMessageType {
   UpdateWinners = 'update_winners',

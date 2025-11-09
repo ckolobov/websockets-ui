@@ -10,6 +10,8 @@ import { playerConnectionsDb } from './database/playerConnections.js';
 import { winnersDb } from './database/winners.js';
 import { addUserToRoom } from './client-commands/addUserToRoom.js';
 import { createGame } from './server-commands/createGame.js';
+import { addShips } from './client-commands/addShips.js';
+import { roomsDb } from './database/rooms.js';
 
 export const wsConnectionHandler = (ws: WebSocket, request: IncomingMessage) => {
   const clientIp = request.socket.remoteAddress;
@@ -52,6 +54,13 @@ export const wsConnectionHandler = (ws: WebSocket, request: IncomingMessage) => 
           if (roomId) {
             updateRoom();
             createGame(roomId);
+          }
+          break;
+        }
+        case ClientMessageType.AddShips: {
+          const roomId: string | null = addShips(parsedMessage);
+          if (roomId && roomsDb.getRoomById(roomId)?.getGameStarted()) {
+            console.log('Start game');
           }
         }
       }

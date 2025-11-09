@@ -58,8 +58,7 @@ class Rooms {
   addShips(playerId: string, ships: ShipParameters[]): void {
     const room = this.getRoomByPlayerId(playerId);
     if (!room) {
-      console.error(`Player ${playerId} is not in any room`);
-      return;
+      throw new Error(`Player ${playerId} is not in any room`);
     }
 
     ships.forEach((ship) => {
