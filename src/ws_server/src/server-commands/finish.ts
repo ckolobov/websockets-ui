@@ -21,8 +21,6 @@ export const finish = (roomId: string) => {
     return;
   }
 
-  console.log('Winner: ', winner);
-
   winnersDb.addWin(winner);
 
   players.forEach((playerInRoom) => {
@@ -45,6 +43,8 @@ export const finish = (roomId: string) => {
     console.log(`Info about game finish sent to ${playerId}`);
     wsConnection.send(makeResponseMessageString(finishServerMessage));
   });
+
+  roomsDb.deleteRoom(roomId);
 
   updateWinners();
 };

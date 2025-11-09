@@ -145,4 +145,25 @@ export class Board {
     this.grid = this.createEmptyGrid();
     this.ships = [];
   }
+
+  private getEmptyCells(): { x: number; y: number }[] {
+    const result = [];
+
+    for (let x = 0; x < this.size; x++) {
+      for (let y = 0; y < this.size; y++) {
+        if (this.grid[x][y] === CellStatus.Empty) {
+          result.push({ x, y });
+        }
+      }
+    }
+
+    return result;
+  }
+
+  getRandomEmptyCell(): { x: number; y: number } {
+    const emptyCells = this.getEmptyCells();
+    const randomIndex = Math.floor(Math.random() * emptyCells.length);
+
+    return emptyCells[randomIndex];
+  }
 }

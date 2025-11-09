@@ -208,4 +208,33 @@ export class Room {
 
     this.currentTurn = opponent.playerId;
   }
+
+  randomAttack(attackerId: string): {
+    hit: boolean;
+    sunk: boolean;
+    gameOver: boolean;
+    shipCells?: { x: number; y: number }[];
+    x: number;
+    y: number;
+  } | null {
+    const opponent = this.getPlayerOpponent(attackerId);
+    if (!opponent) {
+      console.error(`Opponent not found for player ${attackerId} in room ${this.id}`);
+      return null;
+    }
+
+    const { x, y } = opponent.board.getRandomEmptyCell();
+
+    const result = this.attack(attackerId, x, y);
+
+    if (!result) {
+      return null;
+    }
+
+    return {
+      ...result,
+      x,
+      y,
+    };
+  }
 }

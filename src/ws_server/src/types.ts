@@ -6,6 +6,7 @@ export enum ClientMessageType {
   AddUserToRoom = 'add_user_to_room',
   AddShips = 'add_ships',
   Attack = 'attack',
+  RandomAttack = 'randomAttack',
 }
 
 export const isClientMessageType = (messageType: unknown): messageType is ClientMessageType =>
@@ -72,12 +73,22 @@ export interface AttackRequestMessage {
   id: 0;
 }
 
+export interface RandomAttackRequestMessage {
+  type: ClientMessageType.RandomAttack;
+  data: {
+    gameId: number | string;
+    indexPlayer: number | string; // id of the player in the current game session
+  };
+  id: 0;
+}
+
 export type RequestMessage =
   | RegisterRequestMessage
   | CreateRoomRequestMessage
   | AddUserToRoomRequestMessage
   | AddShipsRequestMessage
-  | AttackRequestMessage;
+  | AttackRequestMessage
+  | RandomAttackRequestMessage;
 
 export enum ServerMessageType {
   UpdateWinners = 'update_winners',
