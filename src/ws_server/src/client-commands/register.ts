@@ -9,8 +9,9 @@ export const register = (requestMessage: RegisterRequestMessage): [Response, New
   try {
     const { name, password } = requestMessage.data;
     if (!name || !password) {
-      throw new Error('Invalid registration data');
+      throw new Error('Invalid registration/authentication data');
     }
+
     const newPlayer = playersDb.createPlayer({ name, password });
     const response: ResponseMessage = {
       type: ClientMessageType.Registration,

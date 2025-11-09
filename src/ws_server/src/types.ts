@@ -45,6 +45,7 @@ export type RequestMessage =
 export enum ServerMessageType {
   UpdateWinners = 'update_winners',
   UpdateRoom = 'update_room',
+  CreateGame = 'create_game',
 }
 
 export interface RegisterResponseMessage {
@@ -85,7 +86,17 @@ export interface UpdateRoomServerMessage {
   id: 0;
 }
 
+export interface CreateGameServerMessage {
+  type: ServerMessageType.CreateGame;
+  data: {
+    idGame: number | string;
+    idPlayer: number | string;
+  };
+  id: 0;
+}
+
 export type ResponseMessage =
   | RegisterResponseMessage
   | UpdateWinnersServerMessage
-  | UpdateRoomServerMessage;
+  | UpdateRoomServerMessage
+  | CreateGameServerMessage;

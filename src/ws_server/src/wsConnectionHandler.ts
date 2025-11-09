@@ -9,6 +9,7 @@ import { updateWinners } from './server-commands/updateWinners.js';
 import { playerConnectionsDb } from './database/playerConnections.js';
 import { winnersDb } from './database/winners.js';
 import { addUserToRoom } from './client-commands/addUserToRoom.js';
+import { createGame } from './server-commands/createGame.js';
 
 export const wsConnectionHandler = (ws: WebSocket, request: IncomingMessage) => {
   const clientIp = request.socket.remoteAddress;
@@ -50,6 +51,7 @@ export const wsConnectionHandler = (ws: WebSocket, request: IncomingMessage) => 
           const roomId: string | null = addUserToRoom(parsedMessage, playerId);
           if (roomId) {
             updateRoom();
+            createGame(roomId);
           }
         }
       }
