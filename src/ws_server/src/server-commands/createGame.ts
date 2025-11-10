@@ -19,6 +19,7 @@ export const createGame = (roomId: string) => {
 
   room.createGame();
 
+  console.log(`Game created in room ${roomId}`);
   const playersToInform: PlayerInRoom[] = room.getRealPlayers();
 
   playersToInform.forEach((playerInRoom) => {

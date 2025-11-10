@@ -54,6 +54,10 @@ export class Board {
 
     const size = this.getSize();
 
+    // Check bounds
+    if (direction === ShipDirection.Horizontal && x + length > size) return false;
+    if (direction !== ShipDirection.Horizontal && y + length > size) return false;
+
     // Check ship and surrounding cells to avoid touching
     for (let i = -1; i <= length; i++) {
       for (let j = -1; j <= 1; j++) {
@@ -88,7 +92,7 @@ export class Board {
 
   generateShips() {
     const size = this.getSize();
-    const ships = [1, 1, 1, 1, 2, 2, 2, 3, 3, 4];
+    const ships = [4, 3, 3, 2, 2, 2, 1, 1, 1, 1];
 
     for (let shipLength of ships) {
       let placed = false;
@@ -107,7 +111,6 @@ export class Board {
           direction,
           type: SHIP_TYPE_LENGTH_MAPPING[shipLength],
         };
-        console.log(newShipParameters);
 
         // 3. Check if the ship fits and doesn’t overlap
         if (this.isValidShipPosition(newShipParameters)) {
@@ -173,12 +176,12 @@ export class Board {
     return this.ships.filter((ship) => ship.getIsSunk()).length;
   }
 
-  private getEmptyCells(): { x: number; y: number }[] {
+  private getNotAttackedCells(): { x: number; y: number }[] {
     const result = [];
 
     for (let x = 0; x < this.size; x++) {
       for (let y = 0; y < this.size; y++) {
-        if (this.grid[x][y] === CellStatus.Empty) {
+        if (this.grid[y][x] !== CellStatus.Miss && this.grid[y][x] !== CellStatus.Hit) {
           result.push({ x, y });
         }
       }
@@ -187,8 +190,8 @@ export class Board {
     return result;
   }
 
-  getRandomEmptyCell(): { x: number; y: number } {
-    const emptyCells = this.getEmptyCells();
+  getRandomNotAttackedCell(): { x: number; y: number } {
+    const emptyCells = this.getNotAttackedCells();
     const randomIndex = Math.floor(Math.random() * emptyCells.length);
 
     return emptyCells[randomIndex];

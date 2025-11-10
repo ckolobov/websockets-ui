@@ -9,7 +9,7 @@ enum PlayerType {
 
 interface BotInRoom {
   type: PlayerType.Bot;
-  playerId: '';
+  playerId: string;
   board: Board;
   ready: boolean;
 }
@@ -50,7 +50,7 @@ export class Room {
   private createBotInRoom(): BotInRoom {
     return {
       type: PlayerType.Bot,
-      playerId: '',
+      playerId: randomUUID(),
       board: new Board(),
       ready: true,
     };
@@ -138,11 +138,10 @@ export class Room {
       return false;
     }
     const botInRoom = this.createBotInRoom();
-    console.log('Bot created in room');
+    console.log(`Bot ${botInRoom.playerId} created in room ${this.id}`);
     this.players[1] = botInRoom;
-    console.log('Start generating ships');
+    console.log(`Bot ${botInRoom.playerId} in room ${this.id} generating ships`);
     botInRoom.board.generateShips();
-    console.log(`Bot joined room ${this.id}`);
     return true;
   }
 
@@ -186,7 +185,7 @@ export class Room {
     const success = player.board.addShip(shipParameters);
     if (success) {
       console.log(
-        `Ship added for player ${playerId} at (${shipParameters.position.x}, ${shipParameters.position.y}) in room ${this.id}`,
+        `Ship added at (${shipParameters.position.x}, ${shipParameters.position.y}) for player ${playerId} in room ${this.id}`,
       );
     } else {
       console.error(`Failed to add ship for player ${playerId} in room ${this.id}`);
@@ -257,6 +256,7 @@ export class Room {
       return;
     }
 
+    console.log(`Turn in room ${this.id} switched to player ${opponent.playerId}`);
     this.currentTurn = opponent.playerId;
   }
 
@@ -274,7 +274,7 @@ export class Room {
       return null;
     }
 
-    const { x, y } = opponent.board.getRandomEmptyCell();
+    const { x, y } = opponent.board.getRandomNotAttackedCell();
 
     const result = this.attack(attackerId, x, y);
 

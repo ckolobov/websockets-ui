@@ -5,47 +5,46 @@ import { turn } from './turn.js';
 import { finish } from './finish.js';
 import { getAttackStatus } from '../utils/getAttackStatus.js';
 import { sendAttackMessage } from '../utils/sendAttackMessage.js';
-import { botAttack } from './botAttack.js';
 
-interface ServerAttackParams {
-  roomId: string;
-  x: number;
-  y: number;
-  hit: boolean;
-  sunk: boolean;
-  gameOver: boolean;
-  shipCells?: { x: number; y: number }[];
-}
-
-export const attack = ({ roomId, x, y, hit, sunk, gameOver, shipCells }: ServerAttackParams) => {
+export const botAttack = (roomId: string) => {
   const room = roomsDb.getRoomById(roomId);
   if (!room) {
-    console.error('Cannot attack. Room not found.');
+    console.error('Bot cannot attack. Room not found.');
     return;
   }
 
   const players = room.getPlayers().filter((player) => player !== null);
   if (players.length < 2) {
-    console.error('Cannot attack. Not enough players in the room.');
+    console.error('Bot cannot attack. Not enough players in the room.');
     return;
   }
-
-  const playersToInform: PlayerInRoom[] = room.getRealPlayers();
 
   const currentPlayerId = room.getCurrentTurn();
   if (currentPlayerId === null) {
-    console.error('Cannot attack. Current turn is undefined.');
+    console.error('Bot cannot attack. Current turn is undefined.');
     return;
   }
+
+  console.log(`Bot tries random attack in room ${roomId}`);
+  const botAttackResult = room.randomAttack(currentPlayerId);
+  if (botAttackResult === null) {
+    console.error('Bot attack is not successful.');
+    return;
+  }
+
+  const { x, y, hit, sunk, gameOver, shipCells } = botAttackResult;
 
   const attackStatus = getAttackStatus({ hit, sunk });
 
   console.log(
-    `Player ${currentPlayerId} in room ${roomId} attacked cell { x: ${x}, y: ${y} } with result ${attackStatus}`,
+    `Bot in room ${roomId} attacked cell { x: ${x}, y: ${y} } with result ${attackStatus}`,
   );
+
   if (attackStatus === AttackStatus.Miss) {
     room.switchTurn();
   }
+
+  const playersToInform: PlayerInRoom[] = room.getRealPlayers();
 
   sendAttackMessage({
     players: playersToInform.map((player) => player.playerId),
@@ -56,10 +55,6 @@ export const attack = ({ roomId, x, y, hit, sunk, gameOver, shipCells }: ServerA
     roomId,
   });
   turn(roomId);
-
-  if (attackStatus === AttackStatus.Miss) {
-    botAttack(roomId);
-  }
 
   if (attackStatus === AttackStatus.Killed && shipCells) {
     shipCells.forEach((cell) => {
@@ -89,6 +84,10 @@ export const attack = ({ roomId, x, y, hit, sunk, gameOver, shipCells }: ServerA
   }
 
   if (gameOver) {
-    finish({ roomId, botWin: false });
+    finish({ roomId, botWin: true });
+  }
+
+  if (attackStatus !== AttackStatus.Miss) {
+    botAttack(roomId);
   }
 };
