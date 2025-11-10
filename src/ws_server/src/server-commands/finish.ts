@@ -13,7 +13,7 @@ export const finish = (roomId: string) => {
     return;
   }
 
-  const players: PlayerInRoom[] = room.getPlayers().filter((player) => player !== null);
+  const players: PlayerInRoom[] = room.getRealPlayers();
 
   const winner = room.getCurrentTurn();
   if (winner === null) {

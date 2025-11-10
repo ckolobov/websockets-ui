@@ -11,7 +11,7 @@ export const turn = (roomId: string) => {
     return;
   }
 
-  const players: PlayerInRoom[] = room.getPlayers().filter((player) => player !== null);
+  const players = room.getPlayers().filter((player) => player !== null);
   if (players.length < 2) {
     console.error('Cannot send turn. Not enough players in the room.');
     return;
@@ -23,7 +23,9 @@ export const turn = (roomId: string) => {
     return;
   }
 
-  players.forEach((playerInRoom) => {
+  const playersToInform: PlayerInRoom[] = room.getRealPlayers();
+
+  playersToInform.forEach((playerInRoom) => {
     const playerId = playerInRoom.playerId;
     const wsConnection = playerConnectionsDb.getPlayerConnection(playerId);
 

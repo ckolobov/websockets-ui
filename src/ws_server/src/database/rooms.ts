@@ -44,6 +44,26 @@ class Rooms {
       if (existingRoomId) {
         this.deleteRoom(existingRoomId);
       }
+    } else {
+      throw new Error(`Player ${playerId} enter room ${roomId}`);
+    }
+
+    return room;
+  }
+
+  addBot(roomId: string): Room {
+    const room = this.rooms.get(roomId);
+    if (!room) {
+      throw new Error(`Room ${roomId} not found`);
+    }
+
+    if (room.isFull()) {
+      throw new Error(`Room ${roomId} is full`);
+    }
+
+    const success = room.addBot();
+    if (!success) {
+      throw new Error(`Cannot add Bot to room ${roomId}`);
     }
 
     return room;
@@ -127,12 +147,6 @@ class Rooms {
 
   getRoomCount(): number {
     return this.rooms.size;
-  }
-
-  clear(): void {
-    this.rooms.clear();
-    this.playerRoomIndex.clear();
-    console.log('Rooms database cleared');
   }
 }
 

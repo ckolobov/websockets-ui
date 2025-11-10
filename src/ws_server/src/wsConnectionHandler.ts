@@ -17,6 +17,7 @@ import { turn } from './server-commands/turn.js';
 import { attack as clientAttack } from './client-commands/attack.js';
 import { attack as serverAttack } from './server-commands/attack.js';
 import { randomAttack } from './client-commands/randomAttack.js';
+import { singlePlay } from './client-commands/singlePlay.js';
 
 export const wsConnectionHandler = (ws: WebSocket, request: IncomingMessage) => {
   const clientIp = request.socket.remoteAddress;
@@ -84,6 +85,14 @@ export const wsConnectionHandler = (ws: WebSocket, request: IncomingMessage) => 
           if (result) {
             const { roomId, sunk, gameOver, hit, shipCells, x, y } = result;
             serverAttack({ roomId, hit, sunk, gameOver, x, y, shipCells });
+          }
+          break;
+        }
+        case ClientMessageType.SinglePlay: {
+          const roomId = singlePlay(playerId);
+          if (roomId) {
+            updateRoom();
+            createGame(roomId);
           }
           break;
         }

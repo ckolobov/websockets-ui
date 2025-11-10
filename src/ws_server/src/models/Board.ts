@@ -1,5 +1,12 @@
-import { GameBoard, CellStatus, ShipParameters, ShipDirection } from './types.js';
+import { GameBoard, CellStatus, ShipParameters, ShipDirection, ShipType } from './types.js';
 import { Ship } from './Ship.js';
+
+const SHIP_TYPE_LENGTH_MAPPING: Record<number, ShipType> = {
+  1: ShipType.Small,
+  2: ShipType.Medium,
+  3: ShipType.Large,
+  4: ShipType.Huge,
+};
 
 export class Board {
   private grid: GameBoard;
@@ -45,24 +52,16 @@ export class Board {
       return false;
     }
 
-    if (direction === ShipDirection.Horizontal) {
-      if (x + length > this.size) {
-        return false;
-      }
-      // Check if all cells are empty
-      for (let i = 0; i < length; i++) {
-        if (this.grid[y][x + i] !== CellStatus.Empty) {
-          return false;
-        }
-      }
-    } else {
-      if (y + length > this.size) {
-        return false;
-      }
-      // Check if all cells are empty
-      for (let i = 0; i < length; i++) {
-        if (this.grid[y + i][x] !== CellStatus.Empty) {
-          return false;
+    const size = this.getSize();
+
+    // Check ship and surrounding cells to avoid touching
+    for (let i = -1; i <= length; i++) {
+      for (let j = -1; j <= 1; j++) {
+        const xi = x + (direction === ShipDirection.Horizontal ? i : j);
+        const yi = y + (direction === ShipDirection.Horizontal ? j : i);
+
+        if (xi >= 0 && xi < size && yi >= 0 && yi < size) {
+          if (this.grid[yi][xi] !== CellStatus.Empty) return false;
         }
       }
     }
@@ -85,6 +84,39 @@ export class Board {
     }
 
     return true;
+  }
+
+  generateShips() {
+    const size = this.getSize();
+    const ships = [1, 1, 1, 1, 2, 2, 2, 3, 3, 4];
+
+    for (let shipLength of ships) {
+      let placed = false;
+
+      while (!placed) {
+        // Randomly choose direction
+        const direction = Math.random() < 0.5 ? ShipDirection.Horizontal : ShipDirection.Vertical;
+
+        // Randomly choose starting position
+        const x = Math.floor(Math.random() * size);
+        const y = Math.floor(Math.random() * size);
+
+        const newShipParameters: ShipParameters = {
+          position: { x, y },
+          length: shipLength,
+          direction,
+          type: SHIP_TYPE_LENGTH_MAPPING[shipLength],
+        };
+        console.log(newShipParameters);
+
+        // 3. Check if the ship fits and doesn’t overlap
+        if (this.isValidShipPosition(newShipParameters)) {
+          // 4. Place the ship
+          this.addShip(newShipParameters);
+          placed = true;
+        }
+      }
+    }
   }
 
   getCellStatus(x: number, y: number): CellStatus | null {
@@ -139,11 +171,6 @@ export class Board {
 
   getSunkShipCount(): number {
     return this.ships.filter((ship) => ship.getIsSunk()).length;
-  }
-
-  clear(): void {
-    this.grid = this.createEmptyGrid();
-    this.ships = [];
   }
 
   private getEmptyCells(): { x: number; y: number }[] {

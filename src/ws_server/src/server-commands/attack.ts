@@ -79,11 +79,13 @@ export const attack = ({ roomId, x, y, hit, sunk, gameOver, shipCells }: ServerA
     return;
   }
 
-  const players: PlayerInRoom[] = room.getPlayers().filter((player) => player !== null);
+  const players = room.getPlayers().filter((player) => player !== null);
   if (players.length < 2) {
     console.error('Cannot attack. Not enough players in the room.');
     return;
   }
+
+  const playersToInform: PlayerInRoom[] = room.getRealPlayers();
 
   const currentPlayerId = room.getCurrentTurn();
   if (currentPlayerId === null) {
@@ -98,7 +100,7 @@ export const attack = ({ roomId, x, y, hit, sunk, gameOver, shipCells }: ServerA
   }
 
   sendAttackMessage({
-    players: players.map((player) => player.playerId),
+    players: playersToInform.map((player) => player.playerId),
     x,
     y,
     currentPlayerId,
@@ -116,7 +118,7 @@ export const attack = ({ roomId, x, y, hit, sunk, gameOver, shipCells }: ServerA
             const result = room.attack(currentPlayerId, i, j);
             if (result) {
               sendAttackMessage({
-                players: players.map((player) => player.playerId),
+                players: playersToInform.map((player) => player.playerId),
                 x: i,
                 y: j,
                 currentPlayerId,

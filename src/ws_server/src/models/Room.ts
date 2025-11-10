@@ -2,7 +2,20 @@ import { randomUUID } from 'crypto';
 import { Board } from './Board.js';
 import { ShipParameters } from './types.js';
 
+enum PlayerType {
+  Real = 'real',
+  Bot = 'bot',
+}
+
+interface BotInRoom {
+  type: PlayerType.Bot;
+  playerId: '';
+  board: Board;
+  ready: boolean;
+}
+
 export interface PlayerInRoom {
+  type: PlayerType.Real;
   playerId: string;
   board: Board;
   ready: boolean;
@@ -10,7 +23,7 @@ export interface PlayerInRoom {
 
 export class Room {
   private id: string;
-  private players: [PlayerInRoom, PlayerInRoom | null];
+  private players: [PlayerInRoom, PlayerInRoom | BotInRoom | null];
   private gameCreated: boolean;
   private gameStarted: boolean;
   private currentTurn: string | null;
@@ -27,9 +40,19 @@ export class Room {
 
   private createPlayerInRoom(playerId: string): PlayerInRoom {
     return {
+      type: PlayerType.Real,
       playerId,
       board: new Board(),
       ready: false,
+    };
+  }
+
+  private createBotInRoom(): BotInRoom {
+    return {
+      type: PlayerType.Bot,
+      playerId: '',
+      board: new Board(),
+      ready: true,
     };
   }
 
@@ -37,8 +60,12 @@ export class Room {
     return this.id;
   }
 
-  getPlayers(): [PlayerInRoom, PlayerInRoom | null] {
+  getPlayers(): [PlayerInRoom, PlayerInRoom | BotInRoom | null] {
     return this.players;
+  }
+
+  getRealPlayers(): PlayerInRoom[] {
+    return this.players.filter((player) => player !== null && player.type !== PlayerType.Bot);
   }
 
   getGameCreated(): boolean {
@@ -69,7 +96,7 @@ export class Room {
     return this.players[0]?.playerId === playerId || this.players[1]?.playerId === playerId;
   }
 
-  getPlayer(playerId: string): PlayerInRoom | null {
+  getPlayer(playerId: string): PlayerInRoom | BotInRoom | null {
     if (this.players[0]?.playerId === playerId) {
       return this.players[0];
     }
@@ -79,7 +106,7 @@ export class Room {
     return null;
   }
 
-  getPlayerOpponent(playerId: string): PlayerInRoom | null {
+  getPlayerOpponent(playerId: string): PlayerInRoom | BotInRoom | null {
     if (this.players[0]?.playerId === playerId) {
       return this.players[1];
     }
@@ -105,6 +132,20 @@ export class Room {
     return true;
   }
 
+  addBot(): boolean {
+    if (this.isFull()) {
+      console.error(`Room ${this.id} is full`);
+      return false;
+    }
+    const botInRoom = this.createBotInRoom();
+    console.log('Bot created in room');
+    this.players[1] = botInRoom;
+    console.log('Start generating ships');
+    botInRoom.board.generateShips();
+    console.log(`Bot joined room ${this.id}`);
+    return true;
+  }
+
   setPlayerReady(playerId: string, ready: boolean): void {
     const player = this.getPlayer(playerId);
     if (!player) {
@@ -118,6 +159,10 @@ export class Room {
     if (this.players[0]?.ready && this.players[1]?.ready && !this.gameStarted) {
       this.startGame();
     }
+  }
+
+  createGame(): void {
+    this.gameCreated = true;
   }
 
   private startGame(): void {

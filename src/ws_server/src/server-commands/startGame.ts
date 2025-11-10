@@ -12,13 +12,15 @@ export const startGame = (roomId: string) => {
     return;
   }
 
-  const players: PlayerInRoom[] = room.getPlayers().filter((player) => player !== null);
+  const players = room.getPlayers().filter((player) => player !== null);
   if (players.length < 2) {
     console.error('Cannot start the game. Not enough players in the room.');
     return;
   }
 
-  players.forEach((playerInRoom) => {
+  const playersToInform: PlayerInRoom[] = room.getRealPlayers();
+
+  playersToInform.forEach((playerInRoom) => {
     const playerId = playerInRoom.playerId;
     const playerShipParameters = roomsDb.getShips(playerId);
     const playerShips = playerShipParameters.map((shipParameters) => ({

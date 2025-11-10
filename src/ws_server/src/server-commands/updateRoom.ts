@@ -9,7 +9,7 @@ export const updateRoom = () => {
   const roomsFromDb = roomsDb.getAvailableRooms();
   const rooms = roomsFromDb.map((room) => {
     const roomId = room.getId();
-    const roomPlayers: PlayerInRoom[] = room.getPlayers().filter((player) => player !== null);
+    const roomPlayers: PlayerInRoom[] = room.getRealPlayers();
     const roomUsers = roomPlayers.map((player) => ({
       name: playersDb.getPlayerById(player.playerId)?.name || '',
       index: player.playerId,

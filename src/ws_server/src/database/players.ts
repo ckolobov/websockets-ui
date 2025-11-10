@@ -85,12 +85,6 @@ class Players {
   nameExists(name: string): boolean {
     return this.nameIndex.has(name);
   }
-
-  clear(): void {
-    this.players.clear();
-    this.nameIndex.clear();
-    console.log('Database cleared');
-  }
 }
 
 export const playersDb = new Players();
