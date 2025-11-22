@@ -5,6 +5,7 @@
 ## Installation
 1. Clone/download repo
 2. `npm install`
+3. `cd src/ws_server && npm install`
 
 ## Usage
 
